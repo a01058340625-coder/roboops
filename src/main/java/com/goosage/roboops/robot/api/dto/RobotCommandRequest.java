@@ -1,8 +1,14 @@
 package com.goosage.roboops.robot.api.dto;
 
-import jakarta.validation.constraints.NotBlank;
+public class RobotCommandRequest {
 
-public record RobotCommandRequest(
-        @NotBlank String status
-) {
+    private String command;
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
+    }
 }

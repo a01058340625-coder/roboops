@@ -1,31 +1,26 @@
 package com.goosage.roboops.event.application;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
 
 import com.goosage.roboops.event.domain.EventLog;
+import com.goosage.roboops.event.port.out.SaveRobotEventPort;
 
 @Service
 public class EventService {
 
-    private final AtomicLong sequence = new AtomicLong(0);
-    private final CopyOnWriteArrayList<EventLog> store = new CopyOnWriteArrayList<>();
+    private final SaveRobotEventPort saveRobotEventPort;
 
-    public EventLog publish(String eventType, String robotCode, String message) {
-        EventLog event = new EventLog(
-                sequence.incrementAndGet(),
-                eventType,
-                robotCode,
-                message
-        );
-        store.add(event);
-        return event;
+    public EventService(SaveRobotEventPort saveRobotEventPort) {
+        this.saveRobotEventPort = saveRobotEventPort;
     }
 
-    public List<EventLog> getEvents() {
-        return store;
+    public List<EventLog> getAll() {
+        return saveRobotEventPort.loadAll();
+    }
+
+    public List<EventLog> getByRobotCode(String robotCode) {
+        return saveRobotEventPort.loadByRobotCode(robotCode);
     }
 }

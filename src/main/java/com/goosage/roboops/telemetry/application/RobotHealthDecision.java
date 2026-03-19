@@ -1,31 +1,24 @@
-package com.goosage.roboops.telemetry.dto;
+package com.goosage.roboops.telemetry.application;
 
 import com.goosage.roboops.robot.domain.HealthState;
 import com.goosage.roboops.robot.domain.RecommendedAction;
 import com.goosage.roboops.robot.domain.RobotStatus;
 
-public class TelemetryResponse {
+public class RobotHealthDecision {
 
-    private String robotCode;
-    private RobotStatus status;
-    private HealthState healthState;
-    private RecommendedAction recommendedAction;
-    private String message;
+    private final RobotStatus status;
+    private final HealthState healthState;
+    private final RecommendedAction recommendedAction;
+    private final String message;
 
-    public TelemetryResponse(String robotCode,
-                             RobotStatus status,
-                             HealthState healthState,
-                             RecommendedAction recommendedAction,
-                             String message) {
-        this.robotCode = robotCode;
+    public RobotHealthDecision(RobotStatus status,
+                               HealthState healthState,
+                               RecommendedAction recommendedAction,
+                               String message) {
         this.status = status;
         this.healthState = healthState;
         this.recommendedAction = recommendedAction;
         this.message = message;
-    }
-
-    public String getRobotCode() {
-        return robotCode;
     }
 
     public RobotStatus getStatus() {

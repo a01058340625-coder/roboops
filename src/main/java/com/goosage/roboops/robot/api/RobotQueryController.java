@@ -4,47 +4,29 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.goosage.roboops.robot.api.dto.RobotCommandRequest;
-import com.goosage.roboops.robot.api.dto.RobotCommandResponse;
-import com.goosage.roboops.robot.application.RobotService;
 import com.goosage.roboops.robot.domain.Robot;
-
-import jakarta.validation.Valid;
+import com.goosage.roboops.robot.port.in.GetRobotQueryUseCase;
 
 @RestController
+@RequestMapping("/api/robots")
 public class RobotQueryController {
 
-    private final RobotService robotService;
+    private final GetRobotQueryUseCase getRobotQueryUseCase;
 
-    public RobotQueryController(RobotService robotService) {
-        this.robotService = robotService;
+    public RobotQueryController(GetRobotQueryUseCase getRobotQueryUseCase) {
+        this.getRobotQueryUseCase = getRobotQueryUseCase;
     }
 
-    @GetMapping("/api/robots")
-    public List<Robot> getRobots() {
-        return robotService.getRobots();
+    @GetMapping
+    public List<Robot> getAll() {
+        return getRobotQueryUseCase.getAll();
     }
 
-    @GetMapping("/api/robots/{code}")
-    public Robot getRobot(@PathVariable String code) {
-        return robotService.getRobotByCode(code);
-    }
-
-    @PutMapping("/api/robots/{code}/command")
-    public RobotCommandResponse command(
-            @PathVariable String code,
-            @Valid @RequestBody RobotCommandRequest request
-    ) {
-        Robot updated = robotService.updateStatus(code, request.status());
-
-        return new RobotCommandResponse(
-                updated.code(),
-                updated.status(),
-                "command applied"
-        );
+    @GetMapping("/{code}")
+    public Robot getOne(@PathVariable String code) {
+        return getRobotQueryUseCase.getByCode(code);
     }
 }

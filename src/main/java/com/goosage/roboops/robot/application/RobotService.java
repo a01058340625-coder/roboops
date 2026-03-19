@@ -1,43 +1,49 @@
 package com.goosage.roboops.robot.application;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.goosage.roboops.robot.domain.Robot;
+import com.goosage.roboops.robot.domain.RobotState;
+import com.goosage.roboops.robot.port.in.GetRobotQueryUseCase;
+import com.goosage.roboops.robot.port.out.LoadRobotStatePort;
+import com.goosage.roboops.robot.port.out.SaveRobotStatePort;
 
 @Service
-public class RobotService {
+public class RobotService implements GetRobotQueryUseCase {
 
-    private final Map<String, Robot> store = new ConcurrentHashMap<>();
+    private final LoadRobotStatePort loadRobotStatePort;
+    private final SaveRobotStatePort saveRobotStatePort;
 
-    public RobotService() {
-        store.put("R-001", new Robot("R-001", "FarmBot-1", "IDLE"));
-        store.put("R-002", new Robot("R-002", "FarmBot-2", "WORKING"));
-        store.put("R-003", new Robot("R-003", "FarmBot-3", "CHARGING"));
+    public RobotService(LoadRobotStatePort loadRobotStatePort,
+                        SaveRobotStatePort saveRobotStatePort) {
+        this.loadRobotStatePort = loadRobotStatePort;
+        this.saveRobotStatePort = saveRobotStatePort;
     }
 
-    public java.util.List<Robot> getRobots() {
-        return store.values().stream().toList();
+    @Override
+    public List<Robot> getAll() {
+        return loadRobotStatePort.loadAll().stream()
+                .map(RobotState::toRobot)
+                .toList();
     }
 
-    public Robot getRobotByCode(String code) {
-        Robot r = store.get(code);
-        if (r == null) {
-            throw new IllegalArgumentException("Robot not found: " + code);
-        }
-        return r;
+    @Override
+    public Robot getByCode(String code) {
+        RobotState state = loadRobotStatePort.loadByCode(code);
+        return state == null ? null : state.toRobot();
     }
 
-    public Robot updateStatus(String code, String status) {
-        Robot current = getRobotByCode(code);
-        Robot updated = new Robot(current.code(), current.name(), status);
-        store.put(code, updated);
-        return updated;
+    public RobotState getStateByCode(String code) {
+        return loadRobotStatePort.loadByCode(code);
     }
 
-    public Robot syncStatusFromTelemetry(String code, String status) {
-        return updateStatus(code, status);
+    public RobotState saveState(RobotState robotState) {
+        return saveRobotStatePort.save(robotState);
+    }
+
+    public List<RobotState> getAllStates() {
+        return loadRobotStatePort.loadAll();
     }
 }

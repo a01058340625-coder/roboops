@@ -2,25 +2,25 @@ package com.goosage.roboops.telemetry.api;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.goosage.roboops.telemetry.application.TelemetryService;
 import com.goosage.roboops.telemetry.dto.TelemetryRequest;
 import com.goosage.roboops.telemetry.dto.TelemetryResponse;
-
-import jakarta.validation.Valid;
+import com.goosage.roboops.telemetry.port.in.ReceiveTelemetryUseCase;
 
 @RestController
+@RequestMapping("/api/telemetry")
 public class TelemetryController {
 
-    private final TelemetryService telemetryService;
+    private final ReceiveTelemetryUseCase receiveTelemetryUseCase;
 
-    public TelemetryController(TelemetryService telemetryService) {
-        this.telemetryService = telemetryService;
+    public TelemetryController(ReceiveTelemetryUseCase receiveTelemetryUseCase) {
+        this.receiveTelemetryUseCase = receiveTelemetryUseCase;
     }
 
-    @PostMapping("/api/telemetry")
-    public TelemetryResponse receive(@Valid @RequestBody TelemetryRequest request) {
-        return telemetryService.receive(request);
+    @PostMapping
+    public TelemetryResponse receive(@RequestBody TelemetryRequest request) {
+        return receiveTelemetryUseCase.receive(request);
     }
 }
