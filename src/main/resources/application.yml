@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: roboops
+
+server:
+  port: 8087
